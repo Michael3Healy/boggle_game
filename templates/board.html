@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Boggle{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col text-center my-4">
+            <h1 class="display-1 fw-bold">Boggle Game</h1>
+        </div>
+    </div>
+    {% for row in board %}
+    <div class="row">
+        <div class="col text-center fs-1">
+            {{row}}
+        </div>
+    </div>
+    {% endfor %}
+    <div class="row">
+        <div class="col text-center my-4 fs-4">
+            <form id="guess" method="POST">
+                <label for="guess">Guess: </label>
+                <input type="text" name="guess">
+                <button>Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+{% endblock %}
