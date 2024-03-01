@@ -19,11 +19,24 @@
     {% endfor %}
     <div class="row">
         <div class="col text-center my-4 fs-4">
-            <form id="guess" method="POST">
+            <form id="guess-form" method="POST">
                 <label for="guess">Guess: </label>
-                <input type="text" name="guess">
+                <input type="text" name="guess" id="guess-input">
                 <button>Submit</button>
             </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col text-center my-4 display-3">
+            <h3 class="msg"></h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col text-end display-3">
+            <h3 class="score"></h3>
+        </div>
+        <div class="col">
+            <h3 class="game-clock"></h3>
         </div>
     </div>
 </div>
