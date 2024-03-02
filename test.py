@@ -26,8 +26,8 @@ class FlaskTests(TestCase):
 
     def test_valid_word(self):
         with self.client:
-            with self.client.session_transaction() as session:
-                session['board'] = [["C", "A", "T", "T", "T"], 
+            with self.client.session_transaction() as sess:
+                sess['board'] = [["C", "A", "T", "T", "T"], 
                                     ["C", "A", "T", "T", "T"], 
                                     ["C", "A", "T", "T", "T"], 
                                     ["C", "A", "T", "T", "T"], 
@@ -35,6 +35,7 @@ class FlaskTests(TestCase):
 
             resp = self.client.get('/guess', query_string={'guess': 'cat'})
             
+            # Returns 'ok' for valid guesses
             self.assertEqual(resp.status_code, 200)
             self.assertEqual(resp.json['result'], 'ok')
 
@@ -44,6 +45,7 @@ class FlaskTests(TestCase):
             self.client.get('/')
             resp = self.client.get('/guess', query_string={'guess': 'invalid'})
 
+            # Returns 'not-on-board' for words that aren't on the board
             self.assertEqual(resp.status_code, 200)
             self.assertEqual(resp.json['result'], 'not-on-board')
 
@@ -53,8 +55,22 @@ class FlaskTests(TestCase):
             self.client.get('/')
             resp = self.client.get('/guess', query_string={'guess': 'alsdkf'})
 
+            # returns not-word for invalid words
             self.assertEqual(resp.status_code, 200)
             self.assertEqual(resp.json['result'], 'not-word')
+
+    def test_stat_updates(self):
+        with self.client:
+            with self.client.session_transaction() as sess:
+                sess['highScore'] = 0
+                sess['timesPlayed'] = 0
+
+            resp = self.client.post('/end-game', json={'score': 2})
+        
+            # Updates timesPlayed and highScore in session upon end of game
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(session['timesPlayed'], 1)
+            self.assertEqual(session['highScore'], 2)
 
         
 

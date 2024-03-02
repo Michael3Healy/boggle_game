@@ -1,8 +1,9 @@
 class BoggleGame {
-	constructor(seconds = 5) {
+	constructor(seconds = 3) {
 		this.score = 0;
 		this.seconds = seconds;
 		this.gameClock = setInterval(this.tick.bind(this), 1000);
+		this.words = new Set();
 
 		$('#guess-form').on('submit', this.handleSubmit.bind(this));
 	}
@@ -15,14 +16,20 @@ class BoggleGame {
 			return;
 		}
 
-		const guess = $('#guess-input').val();
+		const guess = $('#guess-input').val().toUpperCase();
+
+		if (!guess) return;
+
+		if (this.words.has(guess)) {
+			$('.msg').text(`You have already added ${guess}!`);
+			return;
+		}
 
 		axios.get('/guess', { params: { guess } }).then(response => {
 			const result = response.data.result;
 			this.showMsg(guess, result);
-			$('#guess-input').val('')
+			$('#guess-input').val('').focus();
 		});
-
 	}
 
 	tick() {
@@ -31,7 +38,7 @@ class BoggleGame {
 
 		if (this.seconds == 0) {
 			clearInterval(this.gameClock);
-			this.endGame()
+			this.endGame();
 		}
 	}
 
@@ -43,6 +50,7 @@ class BoggleGame {
 		word = word.toUpperCase();
 		if (result == 'ok') {
 			$('.msg').text(`Added ${word}!`);
+			this.words.add(word);
 			this.showScore(word);
 		} else if (result == 'not-on-board') {
 			$('.msg').text(`${word} is not on the board!`);
@@ -57,6 +65,6 @@ class BoggleGame {
 	}
 
 	async endGame() {
-		await axios.post('/end-game', {'score': this.score})
+		await axios.post('/end-game', { score: this.score });
 	}
 }
